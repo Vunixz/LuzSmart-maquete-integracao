@@ -474,6 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 15. Loop Principal de Animação e Renderização
   let lastTime = performance.now();
   let lastDelta = 0;
+  let lastSupabaseSyncAt = 0;
 
   function animate() {
     requestAnimationFrame(animate);
@@ -485,6 +486,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Atualiza lógica central do ESP32 (compartilhada entre ambos os simuladores)
     controller.update(delta);
+
+    // Publica o estado calculado pelo controlador uma vez por segundo.
+    // A função é um no-op até js/supabase-config.js receber as credenciais públicas.
+    if (currentTime - lastSupabaseSyncAt >= 1000) {
+      lastSupabaseSyncAt = currentTime;
+      if (window.LuzSmartSupabaseSync) {
+        window.LuzSmartSupabaseSync.publish({
+          ldrValue: controller.ldrValue,
+          pirStates: controller.pirState.slice(),
+          poleIntensities: controller.smartPolesPWM.slice()
+        });
+      }
+    }
 
     // Renderiza a cena ativa
     if (currentApp === 'city') {
