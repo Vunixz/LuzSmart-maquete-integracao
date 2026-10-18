@@ -7,7 +7,7 @@
  */
 (function () {
   const config = window.LUZSMART_SUPABASE_CONFIG || {};
-  const projectUrl = String(config.url || "").trim().replace(/\\/+$/, "");
+  const projectUrl = String(config.url || "").trim().replace(/\/+$/, "");
   const publishableKey = String(config.publishableKey || "").trim();
 
   const configured =
